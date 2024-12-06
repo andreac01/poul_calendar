@@ -1,0 +1,145 @@
+/* General body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2e2e2e; /* Dark grey background */
+    color: #e0e0e0; /* Light grey text */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-size: calc(1vw + 1vh + 5px);
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: #3b3b3b; /* Dark yellow background */
+    color: #ffc500; /* Dark grey text */
+}
+
+/* Calendar container styles */
+.calendar-container {
+    background: #3b3b3b; /* Slightly lighter grey than the body */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    padding: 20px;
+    width: 90%;
+    max-width: 80%;
+    color: #fcc500; /* Dark yellow for contrast */
+}
+
+body.dark-mode .calendar-container {
+    background: #2e2e2e; /* Dark grey background */
+    color: #8e8e8e; /* Light grey text */
+    max-width: 80.5%;
+}
+
+/* Calendar table styles */
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.calendar th {
+    background: #444444; /* Dark grey header */
+    color: #fcc500; /* Dark yellow text */
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 2px solid #fcc500; /* Yellow underline for emphasis */
+}
+
+body.dark-mode .calendar th {
+    background: #fcc500; /* Dark grey background */
+    color: #444444; /* Dark yellow text */
+    border-bottom: 2px solid #5e5e5e; /* Light grey underline */
+}
+
+.calendar td {
+    border: 1px solid #5e5e5e; /* Mid-tone grey borders */
+    height: 100px;
+    vertical-align: top;
+    padding: 5px;
+    position: relative;
+    color: #e0e0e0; /* Light grey text */
+}
+
+body.dark-mode .calendar td {
+    border: 1px solid #444444; /* Dark grey borders */
+    color: #ffc500; /* Light grey text */
+}
+
+/* Event styling */
+.event {
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 4px;
+    background: #fcc500; /* Dark yellow for events */
+    color: #3b3b3b; /* Dark grey text for contrast */
+    font-size: 18px;
+    text-align: center; /* Center the text */
+}
+
+body.dark-mode .event {
+    background: #444444; /* Dark grey background */
+    color: #fcc500; /* Dark yellow text */
+}
+
+/* Highlight today's date */
+.calendar td.today {
+    background: #555555; /* Medium grey background for today */
+    color: #fcc500; /* Dark yellow for emphasis */
+    font-weight: bold;
+}
+
+body.dark-mode .calendar td.today {
+    background: #fcc500; /* Dark grey background */
+    color: #3b3b3b; /* Dark yellow text */
+}
+
+/* Logo styles */
+.logo {
+    margin-top: 20px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 100px;
+    filter: brightness(0.9); /* Slightly dim logo to match theme */
+}
+
+body.dark-mode .logo {
+    filter: brightness(1.1); /* Brighten logo for dark mode */
+}
+
+/* Current month styling */
+.current-month {
+    background-color: #4a4a4a; /* Medium grey for the current month */
+    color: #fcc500; /* Dark yellow text */
+}
+
+body.dark-mode .current-month {
+    background-color: #3b3b3b; /* Dark grey background */
+    color: #fcc500; /* Dark yellow text */
+}
+
+.logo {
+    display: block;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.logo.hidden {
+    opacity: 0; /* Smoothly hide the logo */
+    pointer-events: none; /* Prevent interaction while hidden */
+}
+
+@media (max-width: 600px) {
+    .logo {
+        display: none; /* Completely hide on small screens */
+    }
+}

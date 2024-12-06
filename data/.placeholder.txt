@@ -1,0 +1,1 @@
+In order to use the calendar replace this placeholder with your calendar .ics file, Remember to call it 'basic.ics'

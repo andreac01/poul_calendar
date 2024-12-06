@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Styled Calendar</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="calendar-container">
+		<h1 style="text-align: center; font-weight: bold;">POuL Calendar</h1>
+		<table class="calendar">
+			<thead>
+				<tr>
+					<th>Mon</th>
+					<th>Tue</th>
+					<th>Wed</th>
+					<th>Thu</th>
+					<th>Fri</th>
+					<th>Sat</th>
+					<th>Sun</th>
+				</tr>
+			</thead>
+			<tbody id="calendar-body">
+				<!-- Calendar rows will be dynamically generated -->
+			</tbody>
+		</table>
+	</div>
+	<script>
+		const ics_file = "./data/basic.ics";
+
+		// Helper to fetch and parse the .ics file
+		async function fetchCalendar() {
+			const response = await fetch(ics_file);
+			const data = await response.text();
+			return parseICS(data);
+		}
+
+		function formatDateTime(dateTime) {
+			const date = new Date(dateTime);
+			const hours = date.getHours();
+			const minutes = date.getMinutes().toString().padStart(2, '0');
+			const ampm = hours >= 12 ? 'PM' : 'AM';
+			const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+			return `${formattedHours}:${minutes} ${ampm}`;
+		}
+
+		// Function to parse the ICS data and extract events
+		function parseICS(data) {
+			const events = [];
+			const regex = /BEGIN:VEVENT[\s\S]*?END:VEVENT/g;
+			const eventMatches = data.match(regex);
+			
+			if (eventMatches) {
+				eventMatches.forEach(eventData => {
+					const event = {};
+					const lines = eventData.split('\n');
+
+					lines.forEach(line => {
+						if (line.startsWith('SUMMARY:')) {
+							event.summary = line.replace('SUMMARY:', '').trim();
+						}
+						if (line.startsWith('DTSTART:')) {
+							event.startDate = line.replace('DTSTART:', '').trim();
+						}
+						else if (line.startsWith('DTSTART;VALUE=DATE:')) {
+							event.startDate = line.replace('DTSTART;VALUE=DATE:', '').trim();
+						}
+						if (line.startsWith('DTEND:')) {
+							event.endDate = line.replace('DTEND:', '').trim();
+						}
+						else if (line.startsWith('DTEND;VALUE=DATE:')) {
+							event.endDate = line.replace('DTEND;VALUE=DATE:', '').trim();
+						}
+					});
+
+					if (event.summary && event.startDate) {
+						events.push(event);
+					}
+				});
+
+			}
+
+			return events;
+		}
+
+		function renderCalendar(events) {
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = now.getMonth();
+			const firstDayOfMonth = new Date(year, month, 1).getDay();
+			const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+			const tbody = document.getElementById("calendar-body");
+			tbody.innerHTML = "";
+
+			// Adjust first day of the week to start on Monday
+			const startOffset = (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1);
+
+			let currentRow = document.createElement("tr");
+			for (let i = 0; i < startOffset; i++) {
+				currentRow.appendChild(document.createElement("td"));
+			}
+			
+			for (let day = 1; day <= daysInMonth; day++) {
+				const cell = document.createElement("td");
+				const today = new Date(year, month, day);
+				const dayNumber = document.createElement("div");
+				dayNumber.classList.add("day-number");
+				dayNumber.textContent = day;
+				cell.appendChild(dayNumber);
+
+				// Highlight today and add class for current month
+				if (
+					now.getDate() === day &&
+					now.getMonth() === month &&
+					now.getFullYear() === year
+				) {
+					cell.classList.add("today");
+				} else if (today.getMonth() === month) {
+					cell.classList.add("current-month");
+				}
+
+				// Add events
+				const dayEvents = events.filter((event) => {
+					const eventDate = new Date(event.startDate.slice(0, 4), event.startDate.slice(4, 6) - 1, event.startDate.slice(6, 8), event.startDate.slice(9, 11), event.startDate.slice(11, 13));
+					return eventDate.toDateString() === today.toDateString();
+				});
+				if (dayEvents.length) {
+					const eventDiv = document.createElement("div");
+					eventDiv.classList.add("event");
+					eventDiv.innerHTML = dayEvents.map((e) => {
+						const eDate = new Date(e.startDate.slice(0, 4), e.startDate.slice(4, 6) - 1, e.startDate.slice(6, 8), e.startDate.slice(9, 11), e.startDate.slice(11, 13));
+						const romeOffset = new Date().getTimezoneOffset(); // Current local timezone offset in minutes
+						const eventDate = new Date(eDate.getTime() - romeOffset * 60 * 1000);
+						if (eventDate instanceof Date && !isNaN(eventDate)) {
+							const hours = eventDate.getHours()
+							if (e.startDate.length === 8) {
+								return `${e.summary}`;
+							}
+							const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+							const ampm = hours >= 12 ? 'PM' : 'AM';
+							const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+							const time = `${formattedHours}:${minutes} ${ampm}`;
+							return `${e.summary} (${time})`;
+						} else {
+							return e.summary;
+						}
+					}).join("<br>");
+					cell.appendChild(eventDiv);
+				}
+
+				currentRow.appendChild(cell);
+
+				// Break into a new row
+				if ((startOffset + day) % 7 === 0 || day === daysInMonth) {
+					tbody.appendChild(currentRow);
+					currentRow = document.createElement("tr");
+				}
+			}
+
+		}
+
+		// Initialize the calendar
+		fetchCalendar().then((events) => {
+			renderCalendar(events);
+		});
+
+
+		document.addEventListener("DOMContentLoaded", () => {
+			const logo = document.querySelector(".logo");
+			const calendarElements = document.querySelectorAll(".calendar-container *"); // All child elements of calendar-container
+
+			function isOverlapping(logo, element) {
+				const logoRect = logo.getBoundingClientRect();
+				const elementRect = element.getBoundingClientRect();
+
+				// Check if the logo and element intersect
+				return !(
+					logoRect.bottom < elementRect.top ||
+					logoRect.top > elementRect.bottom ||
+					logoRect.right < elementRect.left ||
+					logoRect.left > elementRect.right
+				);
+			}
+
+			function checkLogoVisibility() {
+				let shouldHide = false;
+
+				calendarElements.forEach((element) => {
+					if (isOverlapping(logo, element)) {
+						shouldHide = true;
+					}
+				});
+
+				if (shouldHide) {
+					logo.classList.add("hidden");
+				} else {
+					logo.classList.remove("hidden");
+				}
+			}
+
+			// Listen for scroll and resize events to check visibility dynamically
+			window.addEventListener("scroll", checkLogoVisibility);
+			window.addEventListener("resize", checkLogoVisibility);
+
+			// Initial check on page load
+			checkLogoVisibility();
+		});
+		// Refresh the page every 15 minutes (900000 milliseconds)
+		setInterval(() => {
+			location.reload();
+		}, 900000);
+		setInterval(() => {
+			document.body.classList.toggle('dark-mode');
+		}, 1801000);
+		
+	</script>
+</body>
+</html>
+<div style="position: absolute; top: 10px; right: 10px; background-color: #333; border-radius: 5px; padding: 5px; cursor: pointer; width: 30px; height: 30px;" onclick="downloadICS()">
+	<img src="images/download_icon.png" alt="Download Calendar" style="width: 20px; height: 20px; vertical-align: middle; orizontal-align:middle; background: none; display: block; margin: 0 auto;">
+</div>
+<img src="images/logo.svg" alt="Logo" class="logo">
+
+
+<script>
+	function downloadICS() {
+		const link = document.createElement('a');
+		link.href = ics_file;
+		link.download = 'basic.ics';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+</script>
