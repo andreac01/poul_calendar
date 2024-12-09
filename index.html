@@ -207,9 +207,9 @@
 			// Initial check on page load
 			checkLogoVisibility();
 		});
-		// Refresh the page every 15 minutes (900000 milliseconds)
+		// Refresh the page every 15 minutes (900000 milliseconds) without cache
 		setInterval(() => {
-			location.reload();
+			location.reload(true);
 		}, 900000);
 		setInterval(() => {
 			document.body.classList.toggle('dark-mode');
