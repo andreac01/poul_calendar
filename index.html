@@ -207,13 +207,29 @@
 			// Initial check on page load
 			checkLogoVisibility();
 		});
-		// Refresh the page every 15 minutes (900000 milliseconds) without cache
+
 		setInterval(() => {
-			location.reload(true);
-		}, 900000);
+			fetchCalendar().then((events) => {
+				renderCalendar(events);
+			});
+		}, 1000 * 60 * 5); // Refresh calendar every 5 minutes
+
+		//every two ours set dark mode for 15 minutes
+		count = 0;
 		setInterval(() => {
-			document.body.classList.toggle('dark-mode');
-		}, 1801000);
+			if (document.body.classList.contains("dark-mode")){
+				document.body.classList.remove("dark-mode");
+			} else {
+				if (count === 8){
+					document.body.classList.add("dark-mode");
+					count = 0;
+				}
+				count++;
+			}
+		}, 1000 * 60 * 5);
+
+			
+
 		
 	</script>
 </body>

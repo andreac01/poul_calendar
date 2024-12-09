@@ -29,6 +29,8 @@ Note that this is just a visualization tool to create a static webpage whose con
 
 ## Info:
 
-- The calendar page switch every 30 minutes (and 1 second) between 2 styles in order to avoid burning the screen.
-- The calendar page is reloaded every 15 minutes to get possible updates.
+- The calendar page switch to dark mode for 5 minutes every 40 minutes in order to avoid burning the screen.
 - This calendar is currently in use at https://minecraft.poul.org/~ceru/poul_calendar
+- There the calendar fetch data every hour
+- Webpage fetch the content on the server every 5 minutes
+- `scraper.py` assumes that data is runned from its folder
