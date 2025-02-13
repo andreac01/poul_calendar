@@ -8,7 +8,12 @@
 </head>
 <body>
 	<div class="calendar-container">
-		<h1 style="text-align: center; font-weight: bold;">POuL Calendar</h1>
+		<!-- <h1 style="text-align: center; font-weight: bold;">POuL Calendar</h1> -->
+		<h1 style="text-align: center; font-weight: bold;">
+			<button class="month-nav" id="prev-month">&lt;</button>
+			<span id="month-year">POuLendario</span>
+			<button class="month-nav" id="next-month">&gt;</button>
+		</h1>
 		<table class="calendar">
 			<thead>
 				<tr>
@@ -27,6 +32,7 @@
 		</table>
 	</div>
 	<script>
+		let currentDisplayDate = new Date(); // Tracks currently displayed month
 		const ics_file = "./data/basic.ics";
 
 		// Helper to fetch and parse the .ics file
@@ -84,10 +90,16 @@
 			return events;
 		}
 
-		function renderCalendar(events) {
+		function updateMonthYearDisplay() {
+			const monthYearSpan = document.getElementById('month-year');
+			const options = { year: 'numeric', month: 'long' };
+			monthYearSpan.textContent = currentDisplayDate.toLocaleDateString('en-US', options);
+		}
+
+		function renderCalendar(events, targetDate) {
 			const now = new Date();
-			const year = now.getFullYear();
-			const month = now.getMonth();
+			const year = targetDate.getFullYear();
+			const month = targetDate.getMonth();
 			const firstDayOfMonth = new Date(year, month, 1).getDay();
 			const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -126,6 +138,7 @@
 					const eventDate = new Date(event.startDate.slice(0, 4), event.startDate.slice(4, 6) - 1, event.startDate.slice(6, 8), event.startDate.slice(9, 11), event.startDate.slice(11, 13));
 					return eventDate.toDateString() === today.toDateString();
 				});
+				
 				if (dayEvents.length) {
 					const eventDiv = document.createElement("div");
 					eventDiv.classList.add("event");
@@ -152,7 +165,7 @@
 
 				currentRow.appendChild(cell);
 
-				// Break into a new row
+				// Break into new row
 				if ((startOffset + day) % 7 === 0 || day === daysInMonth) {
 					tbody.appendChild(currentRow);
 					currentRow = document.createElement("tr");
@@ -163,9 +176,26 @@
 
 		// Initialize the calendar
 		fetchCalendar().then((events) => {
-			renderCalendar(events);
+			renderCalendar(events, currentDisplayDate);
+			updateMonthYearDisplay();
 		});
 
+		// Month navigation event listeners
+		document.getElementById("prev-month").addEventListener("click", () => {
+			currentDisplayDate.setMonth(currentDisplayDate.getMonth() - 1);
+			fetchCalendar().then(events => {
+				renderCalendar(events, currentDisplayDate);
+				updateMonthYearDisplay();
+			});
+		});
+
+		document.getElementById("next-month").addEventListener("click", () => {
+			currentDisplayDate.setMonth(currentDisplayDate.getMonth() + 1);
+			fetchCalendar().then(events => {
+				renderCalendar(events, currentDisplayDate);
+				updateMonthYearDisplay();
+			});
+		});
 
 		document.addEventListener("DOMContentLoaded", () => {
 			const logo = document.querySelector(".logo");
@@ -214,7 +244,7 @@
 			});
 		}, 1000 * 60 * 5); // Refresh calendar every 5 minutes
 
-		//every two ours set dark mode for 15 minutes
+		//every 40 minutes set dark mode for 5 minutes
 		count = 0;
 		setInterval(() => {
 			if (document.body.classList.contains("dark-mode")){

@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    font-size: calc(1vw + 1vh + 5px);
+    font-size: calc(1vw + 1vh + 0.5rem);
 }
 
 /* Dark mode styles */
@@ -21,9 +21,9 @@ body.dark-mode {
 /* Calendar container styles */
 .calendar-container {
     background: #3b3b3b; /* Slightly lighter grey than the body */
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
-    padding: 20px;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    padding: 1.25rem;
     width: 90%;
     max-width: 80%;
     color: #fcc500; /* Dark yellow for contrast */
@@ -45,40 +45,40 @@ body.dark-mode .calendar-container {
 .calendar th {
     background: #444444; /* Dark grey header */
     color: #fcc500; /* Dark yellow text */
-    padding: 10px;
+    padding: 0.625rem;
     text-align: center;
     font-weight: bold;
-    border-bottom: 2px solid #fcc500; /* Yellow underline for emphasis */
+    border-bottom: 0.125rem solid #fcc500; /* Yellow underline for emphasis */
 }
 
 body.dark-mode .calendar th {
     background: #fcc500; /* Dark grey background */
     color: #444444; /* Dark yellow text */
-    border-bottom: 2px solid #5e5e5e; /* Light grey underline */
+    border-bottom: 0.125rem solid #5e5e5e; /* Light grey underline */
 }
 
 .calendar td {
-    border: 1px solid #5e5e5e; /* Mid-tone grey borders */
-    height: 100px;
+    border: 0.0625rem solid #5e5e5e; /* Mid-tone grey borders */
+    height: 6.25rem;
     vertical-align: top;
-    padding: 5px;
+    padding: 0.3125rem;
     position: relative;
     color: #e0e0e0; /* Light grey text */
 }
 
 body.dark-mode .calendar td {
-    border: 1px solid #444444; /* Dark grey borders */
+    border: 0.0625rem solid #444444; /* Dark grey borders */
     color: #ffc500; /* Light grey text */
 }
 
 /* Event styling */
 .event {
-    margin-top: 5px;
-    padding: 5px;
-    border-radius: 4px;
+    margin-top: 0.3125rem;
+    padding: 0.3125rem;
+    border-radius: 0.25rem;
     background: #fcc500; /* Dark yellow for events */
     color: #3b3b3b; /* Dark grey text for contrast */
-    font-size: 18px;
+    font-size: 1.125rem;
     text-align: center; /* Center the text */
 }
 
@@ -101,11 +101,11 @@ body.dark-mode .calendar td.today {
 
 /* Logo styles */
 .logo {
-    margin-top: 20px;
+    margin-top: 1.25rem;
     position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 100px;
+    bottom: 0.625rem;
+    right: 0.625rem;
+    width: 6.25rem;
     filter: brightness(0.9); /* Slightly dim logo to match theme */
 }
 
@@ -127,8 +127,8 @@ body.dark-mode .current-month {
 .logo {
     display: block;
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 1.25rem;
+    right: 1.25rem;
     z-index: 1;
     transition: opacity 0.3s ease-in-out;
 }
@@ -138,8 +138,38 @@ body.dark-mode .current-month {
     pointer-events: none; /* Prevent interaction while hidden */
 }
 
-@media (max-width: 600px) {
+@media (max-width: 37.5rem) {
     .logo {
         display: none; /* Completely hide on small screens */
     }
 }
+
+.month-nav {
+    background: none;
+    border: none;
+    color: #fcc500;
+    font-size: 3.75rem;
+    cursor: pointer;
+    padding: 0 0.625rem;
+}
+
+.month-nav:hover {
+    color: #666;
+}
+
+body.dark-mode .month-nav {
+    color: #a78d5b;
+}
+
+body.dark-mode .month-nav:hover {
+    color: #888;
+}
+
+#month-year {
+    margin: 0 1.25rem;
+}
+
+body.dark-mode #month-year {
+    color: #a78d5b;
+}
+
