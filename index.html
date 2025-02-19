@@ -197,6 +197,23 @@
 			});
 		});
 
+		// Keyboard navigation
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "ArrowLeft") {
+				currentDisplayDate.setMonth(currentDisplayDate.getMonth() - 1);
+				fetchCalendar().then(events => {
+					renderCalendar(events, currentDisplayDate);
+					updateMonthYearDisplay();
+				});
+			} else if (event.key === "ArrowRight") {
+				currentDisplayDate.setMonth(currentDisplayDate.getMonth() + 1);
+				fetchCalendar().then(events => {
+					renderCalendar(events, currentDisplayDate);
+					updateMonthYearDisplay();
+				});
+			}
+		});
+
 		document.addEventListener("DOMContentLoaded", () => {
 			const logo = document.querySelector(".logo");
 			const calendarElements = document.querySelectorAll(".calendar-container *"); // All child elements of calendar-container
