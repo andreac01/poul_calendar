@@ -133,34 +133,106 @@
 					cell.classList.add("current-month");
 				}
 
-				// Add events
-				const dayEvents = events.filter((event) => {
-					const eventDate = new Date(event.startDate.slice(0, 4), event.startDate.slice(4, 6) - 1, event.startDate.slice(6, 8), event.startDate.slice(9, 11), event.startDate.slice(11, 13));
+								// Add events
+								const dayEvents = events.filter((event) => {
+					const eventDate = new Date(
+						event.startDate.slice(0, 4),
+						event.startDate.slice(4, 6) - 1,
+						event.startDate.slice(6, 8),
+						event.startDate.slice(9, 11),
+						event.startDate.slice(11, 13)
+					);
 					return eventDate.toDateString() === today.toDateString();
 				});
 				
 				if (dayEvents.length) {
-					const eventDiv = document.createElement("div");
-					eventDiv.classList.add("event");
-					eventDiv.innerHTML = dayEvents.map((e) => {
-						const eDate = new Date(e.startDate.slice(0, 4), e.startDate.slice(4, 6) - 1, e.startDate.slice(6, 8), e.startDate.slice(9, 11), e.startDate.slice(11, 13));
-						const romeOffset = new Date().getTimezoneOffset(); // Current local timezone offset in minutes
-						const eventDate = new Date(eDate.getTime() - romeOffset * 60 * 1000);
-						if (eventDate instanceof Date && !isNaN(eventDate)) {
-							const hours = eventDate.getHours()
-							if (e.startDate.length === 8) {
-								return `${e.summary}`;
+					if (dayEvents.length <= 3) {
+						dayEvents.forEach((e) => {
+							const eventDiv = document.createElement("div");
+							eventDiv.classList.add("event");
+							const eDate = new Date(
+								e.startDate.slice(0, 4),
+								e.startDate.slice(4, 6) - 1,
+								e.startDate.slice(6, 8),
+								e.startDate.slice(9, 11),
+								e.startDate.slice(11, 13)
+							);
+							const romeOffset = new Date().getTimezoneOffset();
+							const eventDate = new Date(eDate.getTime() - romeOffset * 60 * 1000);
+							if (eventDate instanceof Date && !isNaN(eventDate)) {
+								if (e.startDate.length === 8) {
+									eventDiv.textContent = `${e.summary}`;
+								} else {
+									const hours = eventDate.getHours();
+									const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+									const ampm = hours >= 12 ? 'PM' : 'AM';
+									const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+									eventDiv.textContent = `${e.summary} (${formattedHours}:${minutes} ${ampm})`;
+								}
+							} else {
+								eventDiv.textContent = e.summary;
 							}
-							const minutes = eventDate.getMinutes().toString().padStart(2, '0');
-							const ampm = hours >= 12 ? 'PM' : 'AM';
-							const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
-							const time = `${formattedHours}:${minutes} ${ampm}`;
-							return `${e.summary} (${time})`;
-						} else {
-							return e.summary;
-						}
-					}).join("<br>");
-					cell.appendChild(eventDiv);
+							cell.appendChild(eventDiv);
+						});
+					} else {
+						dayEvents.forEach((e, index) => {
+							const eventDiv = document.createElement("div");
+							eventDiv.classList.add("event");
+							const eDate = new Date(
+								e.startDate.slice(0, 4),
+								e.startDate.slice(4, 6) - 1,
+								e.startDate.slice(6, 8),
+								e.startDate.slice(9, 11),
+								e.startDate.slice(11, 13)
+							);
+							const romeOffset = new Date().getTimezoneOffset();
+							const eventDate = new Date(eDate.getTime() - romeOffset * 60 * 1000);
+							if (eventDate instanceof Date && !isNaN(eventDate)) {
+								if (e.startDate.length === 8) {
+									eventDiv.textContent = `${e.summary}`;
+								} else {
+									const hours = eventDate.getHours();
+									const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+									const ampm = hours >= 12 ? 'PM' : 'AM';
+									const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+									eventDiv.textContent = `${e.summary} (${formattedHours}:${minutes} ${ampm})`;
+								}
+							} else {
+								eventDiv.textContent = e.summary;
+							}
+							// Hide events beyond the first 3 by default
+							if (index >= 3) {
+								eventDiv.style.display = "none";
+								eventDiv.classList.add("extra-event");
+							}
+							cell.appendChild(eventDiv);
+						});
+						
+						// Reveal hidden events on mouse hover
+						cell.addEventListener("mouseenter", () => {
+							const extraEvents = cell.querySelectorAll(".extra-event");
+							extraEvents.forEach(ev => {
+								ev.style.display = "block";
+							});
+						});
+						cell.addEventListener("mouseleave", () => {
+							const extraEvents = cell.querySelectorAll(".extra-event");
+							extraEvents.forEach(ev => {
+								ev.style.display = "none";
+							});
+						});
+						
+						// Allow keyboard toggle with Enter key
+						cell.tabIndex = 0; // Make cell focusable
+						cell.addEventListener("keydown", (event) => {
+							if (event.key === "Enter") {
+								const extraEvents = cell.querySelectorAll(".extra-event");
+								extraEvents.forEach(ev => {
+									ev.style.display = (ev.style.display === "none" ? "block" : "none");
+								});
+							}
+						});
+					}
 				}
 
 				currentRow.appendChild(cell);
